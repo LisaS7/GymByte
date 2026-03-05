@@ -46,8 +46,8 @@ def test_get_all_workouts_handles_repo_error(
 # ----------------- GET /workout/new-form -----------------
 
 
-def test_get_new_form_renders_form(client):
-    response = client.get("/workout/new-form")
+def test_get_new_form_renders_form(authenticated_client):
+    response = authenticated_client.get("/workout/new-form")
 
     assert response.status_code == 200
     assert 'name="name"' in response.text
