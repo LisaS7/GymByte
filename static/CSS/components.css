@@ -30,8 +30,9 @@ a.button.small {
 }
 
 .icon-button {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
+  font-size: 2rem;
   border-radius: 999px;
   border: 1px solid var(--color-borders);
   background: var(--color-panel);
@@ -40,6 +41,11 @@ a.button.small {
   align-items: center;
   justify-content: center;
   padding: 0;
+}
+
+.icon-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px var(--color-accent);
 }
 
 /* ──────────────────────────────── Cards & Tags ──────────────────────────────── */

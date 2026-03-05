@@ -19,11 +19,18 @@
 <section id="new-workout-form-container"></section>
 
 <section id="page-container">
-  {% if workouts and workouts|length %}
+  {% if workouts %}
     {% for workout in workouts %}
-      <div class="card workout-card">
-        <div class="workout-date">{{ workout.date }}</div>
-        <div class="workout-name">{{ workout.name }}</div>
+      <a class="card workout-card"
+        href="{{ url_for('view_workout',
+            workout_date=workout.date,
+            workout_id=workout.workout_id
+        ) }}">
+
+        <div class="workout-date muted">
+          {{ workout.date.strftime("%d %b %Y") }}
+        </div>
+        <h3 class="workout-name">{{ workout.name }}</h3>
 
         <div class="tags-group">
           {% for tag in workout.tags or [] %}
@@ -31,14 +38,16 @@
           {% endfor %}
         </div>
 
-        <a class="icon-button"
-           href="{{ url_for('view_workout', workout_date=workout.date, workout_id=workout.workout_id) }}">
-          👁
-        </a>
-      </div>
+      </a>
     {% endfor %}
   {% else %}
-    <p>No workouts logged yet. The barbell is waiting!</p>
+    <p class="muted">
+    No workouts logged yet.
+    </p>
+
+    <p>
+    Press <strong>+</strong> to start your first training log.
+    </p>
   {% endif %}
 </section>
 {% endblock %}
