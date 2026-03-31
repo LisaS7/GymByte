@@ -21,6 +21,11 @@ document.closeForm = function (selector) {
   if (container) container.innerHTML = '';
 };
 
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('[data-cancel-target]');
+  if (btn) document.closeForm(btn.dataset.cancelTarget);
+});
+
 // Toast is yummy
 document.body.addEventListener('DOMContentLoaded', () => {
   document.body.addEventListener('demoResetDone', () => {

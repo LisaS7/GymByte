@@ -43,7 +43,7 @@
         <button
             type="button"
             class="button small secondary"
-            hx-on="click: document.closeForm('{{ cancel_target }}')"
+            data-cancel-target="{{ cancel_target }}"
         >
             Cancel
         </button>
