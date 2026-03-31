@@ -23,6 +23,18 @@ WeightUnit = Literal["kg", "lb"]
 ProfileSK = Literal["PROFILE"]
 
 
+def _check_theme(v: str) -> str:
+    if v not in settings.THEMES:
+        raise ValueError(f"Invalid theme: {v}")
+    return v
+
+
+def _check_timezone(v: str) -> str:
+    if v not in available_timezones():
+        raise ValueError(f"Invalid timezone: {v}")
+    return v
+
+
 class Preferences(BaseModel):
     show_tips: bool = True
     theme: str = settings.DEFAULT_THEME
@@ -33,9 +45,7 @@ class Preferences(BaseModel):
     @field_validator("theme")
     @classmethod
     def validate_theme(cls, v: str) -> str:
-        if v not in settings.THEMES:
-            raise ValueError(f"Invalid theme: {v}")
-        return v
+        return _check_theme(v)
 
 
 class UserProfile(BaseModel):
@@ -53,8 +63,7 @@ class UserProfile(BaseModel):
 
     @model_validator(mode="after")
     def validate_timezone(self) -> "UserProfile":
-        if self.timezone not in available_timezones():
-            raise ValueError(f"Invalid timezone: {self.timezone}")
+        _check_timezone(self.timezone)
         return self
 
     @property
@@ -75,9 +84,7 @@ class AccountUpdateForm(BaseModel):
     @field_validator("timezone")
     @classmethod
     def validate_timezone(cls, v: str) -> str:
-        if v not in available_timezones():
-            raise ValueError(f"Invalid timezone: {v}")
-        return v
+        return _check_timezone(v)
 
 
 class PreferencesUpdateForm(BaseModel):
@@ -88,6 +95,4 @@ class PreferencesUpdateForm(BaseModel):
     @field_validator("theme")
     @classmethod
     def validate_theme(cls, v: str) -> str:
-        if v not in settings.THEMES:
-            raise ValueError(f"Invalid theme: {v}")
-        return v
+        return _check_theme(v)
