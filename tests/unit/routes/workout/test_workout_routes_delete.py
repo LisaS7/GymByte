@@ -17,8 +17,8 @@ def test_delete_workout_deletes_and_redirects(authenticated_client, fake_workout
 
     response = authenticated_client.delete(path.base, follow_redirects=False)
 
-    assert response.status_code == 303
-    assert response.headers["location"] == "/workout/all"
+    assert response.status_code == 204
+    assert response.headers["HX-Redirect"] == "/workout/all"
     assert fake_workout_repo.deleted_calls == [
         ("test-user-sub", path.workout_date, path.workout_id)
     ]

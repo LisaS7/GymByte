@@ -509,7 +509,7 @@ def delete_workout(
         )
         raise HTTPException(status_code=500, detail="Error deleting workout")
 
-    return RedirectResponse(url="/workout/all", status_code=303)
+    return Response(status_code=204, headers={"HX-Redirect": "/workout/all"})
 
 
 @router.delete("/{workout_date}/{workout_id}/set/{set_number}")
