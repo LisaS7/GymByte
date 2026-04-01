@@ -1,5 +1,5 @@
 import pytest
-from test_data import TEST_WORKOUT_SK_1, USER_PK
+from tests.test_data import TEST_WORKOUT_SK_1, USER_PK
 
 from app.repositories.base import DynamoRepository
 from app.repositories.errors import RepoError
@@ -148,3 +148,51 @@ def test_safe_delete_wraps_client_error(failing_delete_table):
         repo._safe_delete(Key={"PK": USER_PK})
 
     assert "Failed to delete from database" in str(excinfo.value)
+
+
+# ──────────────────────────── _safe_update ────────────────────────────
+
+
+def test_safe_update_calls_table_update_item(fake_table):
+    fake_table.response = {"Attributes": TEST_DATA}
+    repo = FakeRepo(table=fake_table)
+
+    result = repo._safe_update(Key=TEST_DATA, UpdateExpression="SET #n = :v")
+
+    assert fake_table.last_update_kwargs == {
+        "Key": TEST_DATA,
+        "UpdateExpression": "SET #n = :v",
+    }
+    assert result == {"Attributes": TEST_DATA}
+
+
+def test_safe_update_wraps_client_error(failing_update_table):
+    repo = FakeRepo(table=failing_update_table)
+
+    with pytest.raises(RepoError) as excinfo:
+        repo._safe_update(Key={"PK": USER_PK})
+
+    assert "Failed to update database" in str(excinfo.value)
+
+
+# ──────────────────────────── _safe_query pagination ────────────────────────────
+
+
+def test_safe_query_follows_last_evaluated_key(fake_table):
+    """The while-True pagination loop should accumulate items across pages."""
+    from tests.unit.repos.conftest import FakeTable
+
+    page1 = {"Items": [{"PK": "USER#1"}], "LastEvaluatedKey": {"PK": "USER#1"}}
+    page2 = {"Items": [{"PK": "USER#2"}, {"PK": "USER#3"}]}
+
+    paginated_table = FakeTable(paginated_responses=[page1, page2])
+    repo = FakeRepo(table=paginated_table)
+
+    result = repo._safe_query(KeyConditionExpression="pk = :pk")
+
+    assert len(result) == 3
+    assert result[0] == {"PK": "USER#1"}
+    assert result[1] == {"PK": "USER#2"}
+    assert result[2] == {"PK": "USER#3"}
+    # Second call should have received ExclusiveStartKey from page1
+    assert paginated_table.last_query_kwargs["ExclusiveStartKey"] == {"PK": "USER#1"}

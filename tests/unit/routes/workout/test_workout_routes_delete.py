@@ -2,18 +2,14 @@ from app.routes import workout as workout_routes
 from tests.test_data import TEST_DATE_2, TEST_WORKOUT_ID_2
 from tests.unit.routes.workout._helpers import WorkoutPath
 
-# ──────────────────────────────── Fixtures ────────────────────────────────
-
-
-def w2_path():
-    return WorkoutPath(TEST_DATE_2, TEST_WORKOUT_ID_2)
+W2_PATH = WorkoutPath(TEST_DATE_2, TEST_WORKOUT_ID_2)
 
 
 # ──────────────────────────── DELETE /workout/{date}/{id} ────────────────────────────
 
 
 def test_delete_workout_deletes_and_redirects(authenticated_client, fake_workout_repo):
-    path = w2_path()
+    path = W2_PATH
 
     response = authenticated_client.delete(path.base, follow_redirects=False)
 
@@ -33,7 +29,7 @@ def test_delete_workout_returns_500_when_repo_raises(
         workout_routes.WorkoutRepoError("boom-delete"),
     )
 
-    response = authenticated_client.delete(w2_path().base, follow_redirects=False)
+    response = authenticated_client.delete(W2_PATH.base, follow_redirects=False)
 
     assert response.status_code == 500
 
@@ -42,7 +38,7 @@ def test_delete_workout_returns_500_when_repo_raises(
 
 
 def test_delete_set_deletes_and_returns_204(authenticated_client, fake_workout_repo):
-    path = w2_path()
+    path = W2_PATH
 
     response = authenticated_client.delete(path.set_edit(1), follow_redirects=False)
 
@@ -60,7 +56,7 @@ def test_delete_set_returns_500_when_repo_raises(
     )
 
     response = authenticated_client.delete(
-        w2_path().set_edit(1), follow_redirects=False
+        W2_PATH.set_edit(1), follow_redirects=False
     )
 
     assert response.status_code == 500

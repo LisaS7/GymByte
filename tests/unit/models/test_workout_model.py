@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 from pydantic import ValidationError
-from test_data import (
+from tests.test_data import (
     TEST_CREATED_DATETIME,
     TEST_DATE_1,
     TEST_UPDATED_DATETIME,

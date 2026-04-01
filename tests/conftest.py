@@ -139,6 +139,7 @@ def authenticated_client(app_instance):
     finally:
         # Clean up so other tests see the real dependency
         app_instance.dependency_overrides.pop(auth_utils.require_auth, None)
+        app_instance.dependency_overrides.pop(workout_routes.get_profile_repo, None)
 
 
 # --------------- Item Factories ---------------

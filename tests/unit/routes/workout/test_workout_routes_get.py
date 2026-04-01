@@ -248,7 +248,7 @@ def test_edit_workout_meta_returns_500_when_get_workout_with_sets_raises_repo_er
 def test_get_edit_set_form_renders_form(
     authenticated_client, fake_workout_repo, set_factory
 ):
-    fake_set = set_factory(
+    fake_workout_repo.set_to_return = set_factory(
         workout_date=TEST_DATE_2,
         workout_id=TEST_WORKOUT_ID_2,
         set_number=1,
@@ -256,11 +256,6 @@ def test_get_edit_set_form_renders_form(
         weight_kg=Decimal("70"),
         exercise_id="EX-1",
     )
-
-    def fake_get_set(user_sub, workout_date, workout_id, set_number):
-        return fake_set
-
-    fake_workout_repo.get_set = fake_get_set
 
     response = authenticated_client.get(
         f"/workout/{TEST_DATE_2.isoformat()}/{TEST_WORKOUT_ID_2}/set/1/edit"
@@ -307,7 +302,7 @@ def test_get_edit_set_form_converts_kg_to_lb_for_imperial_user(
         lambda: ImperialProfileRepo()
     )
 
-    fake_set = set_factory(
+    fake_workout_repo.set_to_return = set_factory(
         workout_date=TEST_DATE_2,
         workout_id=TEST_WORKOUT_ID_2,
         set_number=1,
@@ -315,11 +310,6 @@ def test_get_edit_set_form_converts_kg_to_lb_for_imperial_user(
         weight_kg=Decimal("100"),
         exercise_id="EX-1",
     )
-
-    def fake_get_set(user_sub, workout_date, workout_id, set_number):
-        return fake_set
-
-    fake_workout_repo.get_set = fake_get_set
 
     response = authenticated_client.get(
         f"/workout/{TEST_DATE_2.isoformat()}/{TEST_WORKOUT_ID_2}/set/1/edit"

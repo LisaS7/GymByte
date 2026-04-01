@@ -63,7 +63,7 @@ def frozen_time(monkeypatch):
     return now
 
 
-class FakeTable:
+class FakeRateLimitTable:
     def __init__(self, count: int):
         self.count = count
         self.last_kwargs = None
@@ -75,8 +75,8 @@ class FakeTable:
 
 @pytest.fixture
 def fake_table_factory():
-    def _make(count: int) -> FakeTable:
-        return FakeTable(count=count)
+    def _make(count: int) -> FakeRateLimitTable:
+        return FakeRateLimitTable(count=count)
 
     return _make
 

@@ -10,11 +10,7 @@ from tests.unit.routes.workout._helpers import (
     post_set,
 )
 
-# ──────────────────────────────── Fixtures ────────────────────────────────
-
-
-def w2_path():
-    return WorkoutPath(TEST_DATE_2, TEST_WORKOUT_ID_2)
+W2_PATH = WorkoutPath(TEST_DATE_2, TEST_WORKOUT_ID_2)
 
 
 # ───────────────────────── POST /workout/create ─────────────────────────
@@ -65,7 +61,7 @@ def test_create_workout_returns_500_when_repo_raises(
 def test_create_workout_set_adds_set_and_returns_204(
     authenticated_client, fake_workout_repo
 ):
-    path = w2_path()
+    path = W2_PATH
 
     response = post_set(authenticated_client, path, exercise_id="EX-BENCH")
 
@@ -94,7 +90,7 @@ def test_create_workout_set_returns_500_when_repo_raises(
         workout_routes.WorkoutRepoError("boom-add-set"),
     )
 
-    response = post_set(authenticated_client, w2_path())
+    response = post_set(authenticated_client, W2_PATH)
 
     assert response.status_code == 500
 
@@ -161,7 +157,7 @@ def test_update_workout_meta_updates_workout_and_renders(
 
     response = post_meta(
         authenticated_client,
-        w2_path(),
+        W2_PATH,
         tags="push, legs, heavy",
         notes="Felt strong",
     )
@@ -184,7 +180,7 @@ def test_update_workout_meta_returns_404_when_not_found(
         workout_routes.WorkoutNotFoundError("Workout not found"),
     )
 
-    response = post_meta(authenticated_client, w2_path())
+    response = post_meta(authenticated_client, W2_PATH)
 
     assert response.status_code == 404
 
@@ -192,7 +188,7 @@ def test_update_workout_meta_returns_404_when_not_found(
 def test_update_workout_meta_returns_500_when_get_workout_with_sets_raises_repo_error(
     authenticated_client, fake_workout_repo, repo_raises
 ):
-    path = w2_path()
+    path = W2_PATH
     repo_raises(
         fake_workout_repo,
         "get_workout_with_sets",
@@ -225,7 +221,7 @@ def test_update_workout_meta_returns_500_when_update_fails(
         workout_routes.WorkoutRepoError("boom-update"),
     )
 
-    response = post_meta(authenticated_client, w2_path())
+    response = post_meta(authenticated_client, W2_PATH)
 
     assert response.status_code == 500
 
@@ -250,7 +246,7 @@ def test_update_workout_meta_returns_500_when_move_date_fails(
 
     fake_workout_repo.move_workout_date = broken_move
 
-    response = post_meta(authenticated_client, w2_path(), date=new_date.isoformat())
+    response = post_meta(authenticated_client, W2_PATH, date=new_date.isoformat())
 
     assert response.status_code == 500
 
@@ -278,7 +274,7 @@ def test_update_workout_meta_moves_date_and_sets_hx_redirect(
 
     fake_workout_repo.move_workout_date = fake_move_workout_date
 
-    response = post_meta(authenticated_client, w2_path(), date=new_date.isoformat())
+    response = post_meta(authenticated_client, W2_PATH, date=new_date.isoformat())
     expected_url = f"/workout/{new_date.isoformat()}/{TEST_WORKOUT_ID_2}"
 
     assert response.status_code == 204
@@ -300,7 +296,7 @@ def test_edit_set_updates_and_returns_204(authenticated_client, fake_workout_rep
 
     fake_workout_repo.edit_set = fake_edit_set
 
-    response = post_edit_set(authenticated_client, w2_path())
+    response = post_edit_set(authenticated_client, W2_PATH)
 
     assert response.status_code == 204
     assert response.headers.get("HX-Trigger") == "workoutSetChanged"
@@ -325,7 +321,7 @@ def test_edit_set_returns_404_when_set_not_found(
         workout_routes.WorkoutNotFoundError("nope"),
     )
 
-    response = post_edit_set(authenticated_client, w2_path())
+    response = post_edit_set(authenticated_client, W2_PATH)
 
     assert response.status_code == 404
     assert "Set not found" in response.text
@@ -340,7 +336,7 @@ def test_edit_set_returns_500_when_repo_error(
         workout_routes.WorkoutRepoError("kaboom"),
     )
 
-    response = post_edit_set(authenticated_client, w2_path())
+    response = post_edit_set(authenticated_client, W2_PATH)
 
     assert response.status_code == 500
     assert "Error updating set" in response.text

@@ -15,8 +15,31 @@ from app.models.profile import Preferences, UserProfile
 from app.models.workout import Workout, WorkoutSet
 from app.routes import progress as progress_routes
 from app.utils import auth as auth_utils, db
+from tests.unit.routes.conftest import FakeExerciseRepo, FakeProfileRepo
 
 USER_SUB = "test-user-sub"
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Extended FakeWorkoutRepo with get_all_workout_data_for_user
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+class FakeProgressWorkoutRepo:
+    def __init__(self):
+        self.workouts_to_return: list[Workout] = []
+        self.sets_to_return: list[WorkoutSet] = []
+
+    def get_all_for_user(self, user_sub: str) -> list[Workout]:
+        return self.workouts_to_return
+
+    def get_all_workout_data_for_user(
+        self, user_sub: str
+    ) -> tuple[list[Workout], list[WorkoutSet]]:
+        return self.workouts_to_return, self.sets_to_return
+
+    def get_sets_for_exercise(self, exercise_id: str) -> list[WorkoutSet]:
+        return [s for s in self.sets_to_return if s.exercise_id == exercise_id]
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -72,41 +95,6 @@ def _make_profile(units: str = "metric") -> UserProfile:
     )
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Extended FakeWorkoutRepo with get_all_workout_data_for_user
-# ──────────────────────────────────────────────────────────────────────────────
-
-
-class FakeProgressWorkoutRepo:
-    def __init__(self):
-        self.workouts_to_return: list[Workout] = []
-        self.sets_to_return: list[WorkoutSet] = []
-
-    def get_all_for_user(self, user_sub: str) -> list[Workout]:
-        return self.workouts_to_return
-
-    def get_all_workout_data_for_user(
-        self, user_sub: str
-    ) -> tuple[list[Workout], list[WorkoutSet]]:
-        return self.workouts_to_return, self.sets_to_return
-
-
-class FakeProgressExerciseRepo:
-    def __init__(self):
-        from app.models.exercise import Exercise
-
-        self._exercises: dict[str, Exercise] = {}
-
-    def seed(self, exercise) -> None:
-        self._exercises[exercise.exercise_id] = exercise
-
-    def get_all_for_user(self, user_sub: str):
-        return list(self._exercises.values())
-
-    def get_exercise_by_id(self, user_sub: str, exercise_id: str):
-        return self._exercises.get(exercise_id)
-
-
 def _make_exercise(exercise_id: str = "squat-id", name: str = "Squat"):
     from app.models.exercise import Exercise
 
@@ -133,14 +121,14 @@ def _make_exercise(exercise_id: str = "squat-id", name: str = "Squat"):
 def progress_client(app_instance):
     """
     TestClient with auth stubbed out and progress-specific repo overrides.
-    Yields (client, workout_repo, exercise_repo).
+    Yields (client, workout_repo, exercise_repo, profile_repo).
     """
     from fastapi import Request
     from fastapi.testclient import TestClient
 
     workout_repo = FakeProgressWorkoutRepo()
-    exercise_repo = FakeProgressExerciseRepo()
-    profile_repo_instance = _MockProfileRepo()
+    exercise_repo = FakeExerciseRepo()
+    profile_repo_instance = FakeProfileRepo()
 
     def fake_auth(request: Request):
         return {"sub": USER_SUB}
@@ -165,14 +153,6 @@ def progress_client(app_instance):
         app_instance.dependency_overrides.pop(progress_routes.get_workout_repo, None)
         app_instance.dependency_overrides.pop(progress_routes.get_exercise_repo, None)
         app_instance.dependency_overrides.pop(progress_routes.get_profile_repo, None)
-
-
-class _MockProfileRepo:
-    def __init__(self, units: str = "metric"):
-        self._profile = _make_profile(units)
-
-    def get_for_user(self, user_sub: str) -> UserProfile:
-        return self._profile
 
 
 # ──────────────────────────────────────────────────────────────────────────────

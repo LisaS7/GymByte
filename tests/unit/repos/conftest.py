@@ -70,13 +70,22 @@ class FakeTable:
     - `response`: dict returned by query/get/put/delete
     - `fail_on`: set of operation names that should raise ClientError
       (e.g. {"query", "put_item"})
+    - `paginated_responses`: list of dicts consumed one per query() call,
+      used to simulate multi-page DynamoDB results. When set, each call to
+      query() pops the next response off the front of the list (ignoring
+      `response`).
     """
 
     def __init__(
-        self, response: dict | None = None, *, fail_on: set[str] | None = None
+        self,
+        response: dict | None = None,
+        *,
+        fail_on: set[str] | None = None,
+        paginated_responses: list[dict] | None = None,
     ):
         self.response: dict = response or {}
         self.fail_on: set[str] = set(fail_on or [])
+        self.paginated_responses: list[dict] = list(paginated_responses or [])
 
         self.last_query_kwargs: dict | None = None
         self.last_get_kwargs: dict | None = None
@@ -95,6 +104,8 @@ class FakeTable:
     def query(self, **kwargs):
         self._maybe_fail("query")
         self.last_query_kwargs = kwargs
+        if self.paginated_responses:
+            return self.paginated_responses.pop(0)
         return self.response
 
     def get_item(self, **kwargs):

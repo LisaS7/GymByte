@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 import pytest
-from test_data import (
+from tests.test_data import (
     TEST_CREATED_DATETIME,
     TEST_DATE_1,
     TEST_SET_SK_1,

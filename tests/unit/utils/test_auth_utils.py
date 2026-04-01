@@ -140,30 +140,30 @@ async def test_require_auth_success(auth_pipeline, make_request_with_cookies):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "exc, expected_detail",
+    [
+        (auth_utils.InvalidTokenError("bad token"), "Invalid token"),
+        (RuntimeError("something unexpected"), "Invalid token"),
+    ],
+)
 async def test_require_auth_failure_cases(
-    monkeypatch, make_request_with_cookies, stub_basic_auth_helpers
+    exc, expected_detail, monkeypatch, make_request_with_cookies, stub_basic_auth_helpers
 ):
     req = make_request_with_cookies({"id_token": "fake-token"})
 
-    cases = [
-        (auth_utils.InvalidTokenError("bad token"), "Invalid token"),
-        (RuntimeError("something unexpected"), "Invalid token"),
-    ]
+    def fake_decode_and_validate(*args, **kwargs):
+        raise exc
 
-    for exc, expected in cases:
+    monkeypatch.setattr(
+        auth_utils, "decode_and_validate_id_token", fake_decode_and_validate
+    )
 
-        def fake_decode_and_validate(_exc=exc, *args, **kwargs):
-            raise _exc
+    with pytest.raises(HTTPException) as err:
+        auth_utils.require_auth(req, Response())
 
-        monkeypatch.setattr(
-            auth_utils, "decode_and_validate_id_token", fake_decode_and_validate
-        )
-
-        with pytest.raises(HTTPException) as err:
-            auth_utils.require_auth(req, Response())
-
-        assert err.value.status_code == 401
-        assert expected in err.value.detail
+    assert err.value.status_code == 401
+    assert expected_detail in err.value.detail
 
 
 # ------------ attempt_token_refresh ------------
