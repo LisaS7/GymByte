@@ -4,10 +4,10 @@
     <div class="form-row">
         <!-- Reps -->
         <div class="form-field">
-            <label>Reps</label>
+            <label for="reps">Reps</label>
             <div class="number-stepper" data-step="1" data-min="1">
                 <button type="button" class="stepper-button elevated" data-action="decrement">−</button>
-                <input type="number" name="reps" min="1" required value="{{ set.reps if set else '' }}">
+                <input type="number" id="reps" name="reps" min="1" required value="{{ set.reps if set else '' }}">
                 <button type="button" class="stepper-button elevated" data-action="increment">+</button>
             </div>
         </div>
@@ -17,7 +17,7 @@
             <label for="weight_kg">Weight ({{ weight_unit|default('kg') }})</label>
             <div class="number-stepper" data-step="0.5" data-min="0">
                 <button type="button" class="stepper-button elevated" data-action="decrement">−</button>
-                <input type="number" name="weight_kg" step="0.5" min="0" value="{{ set.weight_kg if set else '' }}">
+                <input type="number" id="weight_kg" name="weight_kg" step="0.5" min="0" value="{{ set.weight_kg if set else '' }}">
                 <button type="button" class="stepper-button elevated" data-action="increment">+</button>
             </div>
         </div>
@@ -25,10 +25,10 @@
 
      <!-- RPE -->
     <div class="form-field">
-        <label>RPE</label>
+        <label for="rpe">RPE</label>
         <div class="number-stepper" data-step="1" data-min="1" data-max="10">
             <button type="button" class="stepper-button" data-action="decrement">−</button>
-            <input type="number" name="rpe" min="1" max="10" value="{{ set.rpe if set else '' }}">
+            <input type="number" id="rpe" name="rpe" min="1" max="10" value="{{ set.rpe if set else '' }}">
             <button type="button" class="stepper-button" data-action="increment">+</button>
         </div>
     </div>

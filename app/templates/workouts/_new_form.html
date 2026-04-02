@@ -2,13 +2,13 @@
     <h3>Add a new workout:</h3>
     <div class="form-row">
         <div class="form-field">
-            <label>Date</label>
-            <input type="date" name="date" value="{{ default_date.isoformat() }}" required>
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" value="{{ default_date.isoformat() }}" required>
         </div>
 
         <div class="form-field">
-            <label>Name</label>
-            <input type="text" name="name">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name">
         </div>
     </div>
 
