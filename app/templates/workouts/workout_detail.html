@@ -28,6 +28,7 @@
         {% for group in sets | groupby('exercise_id') %}
             {% set exercise_id = group.grouper %}
             {% set exercise = exercises.get(exercise_id) if exercises else None %}
+            <div class="exercise-group">
             <div>
                 {% if exercise %}
                     <div class="exercise-header flex-row-spaced">
@@ -78,7 +79,18 @@
                                 —
                             {% endif %}
                         </td>
-                        <td>{{s.rpe}}</td>
+                        <td>
+                            {% if s.rpe is not none %}
+                                {% if s.rpe <= 4 %}{% set rpe_class = "rpe-easy" %}
+                                {% elif s.rpe <= 6 %}{% set rpe_class = "rpe-moderate" %}
+                                {% elif s.rpe <= 8 %}{% set rpe_class = "rpe-hard" %}
+                                {% else %}{% set rpe_class = "rpe-max" %}
+                                {% endif %}
+                                <span class="rpe-badge {{ rpe_class }}">{{ s.rpe }}</span>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                         <td>
                             <button
                                 class="icon-button"
@@ -121,6 +133,7 @@
             </table>
             <section id="new-set-form-container-{{ exercise_id }}" class="add-set">
             </section>
+            </div>
         {% endfor %}
     {% else %}
         <p>No sets logged yet. It's the thought that counts.</p>
@@ -133,11 +146,9 @@
 {# TODO: big ADD EXERCISE button - inline form? on save htmx swap whole set list #}
 {# this form also needs a cancel button #}
 
-<section id="delete-workout" class="card">
-  <div class="flex-row-spaced">
-    <span class="muted">Delete entire workout:</span>
+<section id="delete-workout">
     <button
-        class="icon-button"
+        class="danger"
         type="button"
         hx-delete="{{ url_for('delete_workout',
             workout_date=workout.date,
@@ -147,9 +158,8 @@
         hx-target="body"
         hx-swap="outerHTML"
         aria-label="Delete workout">
-            ✕
+        Delete workout
     </button>
-    </div>
 </section>
 
 

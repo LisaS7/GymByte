@@ -29,6 +29,25 @@ a.button.small {
   font-size: 0.95rem;
 }
 
+button.danger,
+a.button.danger {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+button.danger:hover,
+a.button.danger:hover {
+  background: rgba(248, 113, 113, 0.2);
+  filter: none;
+}
+
+#delete-workout {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
 .icon-button {
   width: 40px;
   height: 40px;
