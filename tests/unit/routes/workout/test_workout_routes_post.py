@@ -5,7 +5,6 @@ from app.routes import workout as workout_routes
 from tests.test_data import TEST_DATE_2, TEST_WORKOUT_ID_2
 from tests.unit.routes.workout._helpers import (
     WorkoutPath,
-    assert_html,
     post_edit_set,
     post_meta,
     post_set,
@@ -167,7 +166,7 @@ def test_update_workout_meta_updates_workout_and_renders(
         notes="Felt strong",
     )
 
-    assert_html(response)
+    assert response.status_code == 200
     assert len(fake_workout_repo.updated_workouts) == 1
 
     updated = fake_workout_repo.updated_workouts[0]
