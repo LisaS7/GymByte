@@ -6,54 +6,7 @@
 
 
 
-<section id="workout-meta" class="card">
-    <header id="workout-detail-header" class="flex-row-spaced">
-        <div class="workout-title">
-            <h2>{{workout.name}}</h2>
-            <p>
-                {{ workout.date.strftime("%A %d %B %Y")  }}
-            </p>
-        </div>
-        <a href="{{ url_for('get_all_workouts') }}"
-            class="icon-button"
-            title="Back to list"
-            aria-label="Back to list">
-            ←
-        </a>
-    </header>
-
-    <div class="flex-row-spaced">
-        <div class="tags-group">
-            <span class="muted">Tags:</span>
-            {% for tag in workout.tags or [] %}
-                <span class="tag">{{ tag }}</span>
-            {% endfor %}
-        </div>
-        <button
-            type="button"
-            class="icon-button"
-            hx-get="{{ url_for('edit_workout_meta',
-                workout_date=workout.date,
-                workout_id=workout.workout_id
-            ) }}"
-            hx-target="#workout-meta"
-            hx-swap="outerHTML"
-            title="Edit workout"
-            aria-label="Edit workout"
-            >
-            ✎
-        </button>
-    </div>
-
-    <div id="workout-notes">
-        <h3>Notes</h3>
-        {% if workout.notes %}
-            <p>{{ workout.notes }}</p>
-        {% else %}
-            <p class="muted">No notes yet...fossilize your thoughts here.</p>
-        {% endif %}
-    </div>
-</section>
+{% include "workouts/_workout_meta.html" %}
 
 <section id="sets-list" class="card">
 

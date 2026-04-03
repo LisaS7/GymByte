@@ -290,6 +290,29 @@ def view_workout(
 # ---------------------- Edit ---------------------------
 
 
+# ---- Return the workout meta fragment -----
+@router.get("/{workout_date}/{workout_id}/meta")
+def get_workout_meta(
+    request: Request,
+    workout_date: DateType,
+    workout_id: str,
+    claims=Depends(auth.require_auth),
+    repo: DynamoWorkoutRepository = Depends(get_workout_repo),
+):
+    user_sub = claims["sub"]
+
+    try:
+        workout, _sets = repo.get_workout_with_sets(user_sub, workout_date, workout_id)
+    except WorkoutNotFoundError:
+        raise HTTPException(status_code=404, detail="Workout not found")
+    except WorkoutRepoError:
+        raise HTTPException(status_code=500, detail="Error fetching workout")
+
+    return render_template(
+        request, "workouts/_workout_meta.html", context={"workout": workout}
+    )
+
+
 # ---- Return the workout meta form -----
 @router.get("/{workout_date}/{workout_id}/edit-meta")
 def edit_workout_meta(
@@ -368,14 +391,12 @@ def update_workout_meta(
             )
             raise HTTPException(status_code=500, detail="Error updating workout")
 
-        sets, defaults = get_sorted_sets_and_defaults(sets)
-
         logger.debug(f"Updated metadata for workout {workout_id}. No date change.")
 
         return render_template(
             request,
-            "workouts/workout_detail.html",
-            context={"workout": workout, "sets": sets, "defaults": defaults},
+            "workouts/_workout_meta.html",
+            context={"workout": workout},
         )
 
     # if date has changed then create new and delete old
