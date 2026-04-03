@@ -26,19 +26,3 @@ document.addEventListener('click', function (e) {
   if (btn) document.closeForm(btn.dataset.cancelTarget);
 });
 
-// Toast is yummy
-document.body.addEventListener('DOMContentLoaded', () => {
-  document.body.addEventListener('demoResetDone', () => {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-
-    toast.textContent = 'Demo reset complete.';
-    toast.hidden = false;
-
-    // re-hide after 2.5s
-    window.clearTimeout(toast._t);
-    toast._t = window.setTimeout(() => {
-      toast.hidden = true;
-    }, 2500);
-  });
-});

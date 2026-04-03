@@ -26,12 +26,6 @@ class Settings(BaseSettings):
     COGNITO_REDIRECT_URI: str = ""
     COGNITO_ISSUER_URL: str = ""
 
-    # ──────────────────── Demo User ─────────────────────
-
-    DEMO_USER_SUB: str | None = None
-    DEMO_USER_EMAIL: str | None = None
-    DEMO_RESET_COOLDOWN_SECONDS: int = 300
-
     # ──────────────────── Rate limiting ─────────────────────
     RATE_LIMIT_ENABLED: bool = True
 
