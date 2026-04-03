@@ -107,14 +107,15 @@
                                 ✎
                             </button>
                             <button
-                                class="icon-button"
+                                class="icon-button delete-btn"
                                 type="button"
+                                data-confirm-label="Sure?"
+                                data-original-label="✕"
                                 hx-delete="{{ url_for('delete_set',
                                     workout_date=workout.date,
                                     workout_id=workout.workout_id,
                                     set_number=s.set_number
                                 ) }}"
-                                hx-confirm="Delete this set?"
                                 hx-target="#{{ set_row_id }}"
                                 hx-swap="outerHTML"
                                 aria-label="Delete set {{ s.set_number }}"
@@ -148,13 +149,14 @@
 
 <section id="delete-workout">
     <button
-        class="button danger"
+        class="button danger delete-btn"
         type="button"
+        data-confirm-label="Confirm delete?"
+        data-original-label="Delete workout"
         hx-delete="{{ url_for('delete_workout',
             workout_date=workout.date,
             workout_id=workout.workout_id
         ) }}"
-        hx-confirm="Delete workout? (This cannot be undone)"
         hx-target="body"
         hx-swap="outerHTML"
         aria-label="Delete workout">

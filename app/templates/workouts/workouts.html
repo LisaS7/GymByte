@@ -18,8 +18,8 @@
 
 <section id="new-workout-form-container"></section>
 
-<section class="page-grid">
-  {% if workouts %}
+{% if workouts %}
+  <section class="page-grid">
     {% for workout in workouts %}
       <a class="card workout-card"
         href="{{ url_for('view_workout',
@@ -40,19 +40,19 @@
 
       </a>
     {% endfor %}
-  {% else %}
-    <p class="muted">No workouts logged yet.</p>
-    <button
-      class="button"
-      type="button"
-      hx-get="/workout/new-form"
-      hx-target="#new-workout-form-container"
-      hx-swap="innerHTML"
-    >
-      Log your first workout
-    </button>
-  {% endif %}
-</section>
+  </section>
+{% else %}
+  <p class="muted">No workouts logged yet.</p>
+  <button
+    class="button"
+    type="button"
+    hx-get="/workout/new-form"
+    hx-target="#new-workout-form-container"
+    hx-swap="innerHTML"
+  >
+    Log your first workout
+  </button>
+{% endif %}
 {% endblock %}
 
 

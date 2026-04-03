@@ -13,14 +13,16 @@ html[data-theme='apothecary'] {
   --color-muted: #88a79a;
 
   --color-accent: #7fe0b3;
+  --color-link: #60c49a;
   --color-tag: #d6c08b;
 
   --color-button: #7fe0b3;
   --color-button-text: #07110d;
   --color-button-secondary: #d6c08b;
 
-  --color-toast-bg: #eaf6f1;
-  --color-toast-text: #0c1210;
+  --color-danger: #f87171;
+  --color-warning: #facc15;
+  --color-success: #4ade80;
 }
 
 /* ──────────────── Prehistoric Night (warm pastel ember) ──────────────── */
@@ -35,12 +37,14 @@ html[data-theme='prehistoric'] {
   --color-muted: #c4a391;
 
   --color-accent: #ffb38a;
+  --color-link: #e89c75;
   --color-tag: #ffd59e;
 
   --color-button: #ffb38a;
   --color-button-text: #2a1207;
   --color-button-secondary: #ffd59e;
 
-  --color-toast-bg: #fff4e6;
-  --color-toast-text: #170f0b;
+  --color-danger: #f87171;
+  --color-warning: #facc15;
+  --color-success: #4ade80;
 }

@@ -17,63 +17,61 @@
 
 <section id="new-exercise-form-container"></section>
 
-<section class="page-grid">
+{% if exercises %}
+  <section class="page-grid">
+    {% for exercise in exercises %}
 
-    {% if exercises %}
-        {% for exercise in exercises %}
+        <div class="card exercise-card" id="exercise-card-{{ exercise.exercise_id }}">
 
-            <div class="card exercise-card" id="exercise-card-{{ exercise.exercise_id }}">
-
-                <div class="card-header">
-                    <div class="exercise-name">{{ exercise.name }}</div>
-                </div>
-
-                <div class="card-meta">
-                    <span class="exercise-equipment">
-                        {{ exercise.equipment or "Bodyweight" }}
-                    </span>
-
-                    <span class="exercise-category">
-                        {{ exercise.category or "General" }}
-                    </span>
-                </div>
-
-                <div class="tags-group">
-                    {% for muscle in exercise.muscles or [] %}
-                        <span class="tag">{{ muscle }}</span>
-                    {% endfor %}
-                </div>
-
-                <div class="card-actions">
-                    <button
-                        class="icon-button"
-                        type="button"
-                        aria-label="Edit exercise"
-                        hx-get="{{ url_for('get_edit_exercise_form', exercise_id=exercise.exercise_id) }}"
-                        hx-target="#edit-exercise-form-container-{{ exercise.exercise_id }}"
-                        hx-swap="innerHTML"
-                    >✎</button>
-                    <button
-                        class="icon-button"
-                        type="button"
-                        aria-label="Delete exercise"
-                        hx-delete="{{ url_for('delete_exercise', exercise_id=exercise.exercise_id) }}"
-                        hx-target="#exercise-card-{{ exercise.exercise_id }}"
-                        hx-swap="outerHTML"
-                        hx-confirm="Delete {{ exercise.name }}?"
-                    >✕</button>
-                </div>
-
-                <div id="edit-exercise-form-container-{{ exercise.exercise_id }}"></div>
-
+            <div class="card-header">
+                <div class="exercise-name">{{ exercise.name }}</div>
             </div>
 
-        {% endfor %}
+            <div class="card-meta">
+                <span class="exercise-equipment">
+                    {{ exercise.equipment or "Bodyweight" }}
+                </span>
+                <span class="card-meta-separator" aria-hidden="true">·</span>
+                <span class="exercise-category">
+                    {{ exercise.category or "General" }}
+                </span>
+            </div>
 
-    {% else %}
-        <p>No exercises found!</p>
-    {% endif %}
+            <div class="tags-group">
+                {% for muscle in exercise.muscles or [] %}
+                    <span class="tag">{{ muscle }}</span>
+                {% endfor %}
+            </div>
 
-</section>
+            <div class="card-actions">
+                <button
+                    class="icon-button"
+                    type="button"
+                    aria-label="Edit exercise"
+                    hx-get="{{ url_for('get_edit_exercise_form', exercise_id=exercise.exercise_id) }}"
+                    hx-target="#edit-exercise-form-container-{{ exercise.exercise_id }}"
+                    hx-swap="innerHTML"
+                >✎</button>
+                <button
+                    class="icon-button delete-btn"
+                    type="button"
+                    aria-label="Delete exercise"
+                    data-confirm-label="Sure?"
+                    data-original-label="✕"
+                    hx-delete="{{ url_for('delete_exercise', exercise_id=exercise.exercise_id) }}"
+                    hx-target="#exercise-card-{{ exercise.exercise_id }}"
+                    hx-swap="outerHTML"
+                >✕</button>
+            </div>
+
+            <div id="edit-exercise-form-container-{{ exercise.exercise_id }}"></div>
+
+        </div>
+
+    {% endfor %}
+  </section>
+{% else %}
+  <p class="muted">No exercises found!</p>
+{% endif %}
 
 {% endblock %}

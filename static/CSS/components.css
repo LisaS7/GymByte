@@ -36,14 +36,14 @@ a.button.small {
 
 .button.danger,
 a.button.danger {
-  background: rgba(248, 113, 113, 0.1);
-  color: #f87171;
-  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
 }
 
 .button.danger:hover,
 a.button.danger:hover {
-  background: rgba(248, 113, 113, 0.2);
+  background: color-mix(in srgb, var(--color-danger) 22%, transparent);
   filter: none;
 }
 
@@ -126,6 +126,10 @@ a.button.danger:hover {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--color-borders);
   color: var(--color-tag);
+  max-width: 20ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ──────────────────────────────── Forms ──────────────────────────────── */
@@ -134,7 +138,7 @@ form {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 
 .form-row {
@@ -199,11 +203,12 @@ textarea:focus {
 
 .stepper-button {
   margin: 0;
-  padding: 0.25rem 0.55rem;
+  padding: 0.35rem 0.6rem;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-borders);
   background: var(--color-button);
   color: var(--color-button-text);
+  font-size: 0.95rem;
 }
 
 /* ──────────────────────────────── Workout List ──────────────────────────────── */
@@ -293,10 +298,29 @@ textarea:focus {
   font-weight: 600;
 }
 
-.rpe-easy     { background: rgba(74, 222, 128, 0.12); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.25); }
-.rpe-moderate { background: rgba(250, 204, 21, 0.12);  color: #facc15; border: 1px solid rgba(250, 204, 21, 0.25); }
-.rpe-hard     { background: rgba(251, 146, 60, 0.12);  color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.25); }
-.rpe-max      { background: rgba(248, 113, 113, 0.12); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.25); }
+.rpe-easy {
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+  border: 1px solid color-mix(in srgb, var(--color-success) 25%, transparent);
+}
+
+.rpe-moderate {
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
+.rpe-hard {
+  background: color-mix(in srgb, #fb923c 12%, transparent);
+  color: #fb923c;
+  border: 1px solid color-mix(in srgb, #fb923c 25%, transparent);
+}
+
+.rpe-max {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
 
 /* ──────────────────────────────── Profile ──────────────────────────────── */
 

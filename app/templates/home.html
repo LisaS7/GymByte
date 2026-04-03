@@ -23,6 +23,9 @@
     <section class="card">
       <h1>ElbieFit</h1>
       <p class="muted">Ready when you are.</p>
+      <div class="form-row">
+        <a class="button" href="/workout/all">Log a workout</a>
+      </div>
     </section>
 
     <section class="card mt-1">
@@ -35,7 +38,7 @@
               <div class="flex-row-spaced">
                 <div>
                   <div class="workout-name">{{ w.name or "Workout" }}</div>
-                  <div class="muted">{{ w.date.isoformat() }}</div>
+                  <div class="muted">{{ w.date.strftime("%d %b %Y") }}</div>
                 </div>
 
                 <a class="icon-button"

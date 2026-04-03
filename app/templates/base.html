@@ -56,10 +56,8 @@
       {% block content %}{% endblock %}
     </main>
 
-    <div id="toast" class="toast" hidden></div>
-
     <footer id="page-footer">
-      <p>&copy; {{ current_year or "2025" }} ElbieFit</p>
+      <p>&copy; {{ current_year }} ElbieFit</p>
     </footer>
     <script src="{{ url_for('static', path='js/main.js') }}"></script>
     <script src="{{ url_for('static', path='js/number-spinner.js') }}"></script>
