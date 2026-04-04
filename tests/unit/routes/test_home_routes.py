@@ -16,7 +16,7 @@ def test_home_logged_out_contains_welcome_title(client, monkeypatch):
     assert "Recent workouts" not in response.text
 
 
-def test_home_logged_in_shows_dashboard(client, monkeypatch):
+def test_home_logged_in_shows_dashboard(client, fake_workout_repo, monkeypatch):
     monkeypatch.setattr(
         auth_utils, "require_auth", lambda _request: {"sub": "test-user-sub"}
     )

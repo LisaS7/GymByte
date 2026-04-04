@@ -2,7 +2,7 @@ import time
 from datetime import date as DateType
 
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 
 from app.settings import settings
 from app.utils.log import logger
@@ -124,6 +124,11 @@ def rate_limit_hit(
     except ClientError as e:
         logger.warning(
             f"Rate limit storage error; failing open.\nClient bucket: {client_id[:64]}\nError: {e.response.get("Error", {}).get("Code")}",
+        )
+        raise RateLimitDdbError(str(e)) from e
+    except BotoCoreError as e:
+        logger.warning(
+            f"Rate limit connectivity error; failing open.\nClient bucket: {client_id[:64]}\nError: {e}",
         )
         raise RateLimitDdbError(str(e)) from e
 

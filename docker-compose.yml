@@ -5,6 +5,7 @@ services:
     ports:
       - "8001:8000"
     command: "-jar DynamoDBLocal.jar -dbPath /data -sharedDb"
+    user: root
     volumes:
       - dynamodb-data:/data
 
