@@ -157,7 +157,7 @@ def test_post_preferences_success_returns_card_with_saved(
     updated = original.model_copy(
         update={
             "preferences": original.preferences.model_copy(
-                update={"theme": "prehistoric", "units": "imperial"}
+                update={"theme": "volt", "units": "imperial"}
             )
         }
     )
@@ -166,7 +166,7 @@ def test_post_preferences_success_returns_card_with_saved(
 
     resp = authenticated_client.post(
         "/profile/preferences",
-        data={"theme": "prehistoric", "units": "imperial"},
+        data={"theme": "volt", "units": "imperial"},
     )
 
     assert resp.status_code == 200
@@ -174,7 +174,7 @@ def test_post_preferences_success_returns_card_with_saved(
 
     assert repo.last_update_prefs == {
         "user_sub": repo.last_update_prefs["user_sub"],
-        "theme": "prehistoric",
+        "theme": "volt",
         "units": "imperial",
     }
 
@@ -186,7 +186,7 @@ def test_post_preferences_success_saves_theme_and_units(
     updated = original.model_copy(
         update={
             "preferences": original.preferences.model_copy(
-                update={"theme": "prehistoric", "units": "metric"}
+                update={"theme": "volt", "units": "metric"}
             )
         }
     )
@@ -195,7 +195,7 @@ def test_post_preferences_success_saves_theme_and_units(
 
     resp = authenticated_client.post(
         "/profile/preferences",
-        data={"theme": "prehistoric", "units": "metric"},
+        data={"theme": "volt", "units": "metric"},
     )
 
     assert resp.status_code == 200
@@ -229,7 +229,7 @@ def test_post_preferences_repo_error_returns_500(
     resp = authenticated_client.post(
         "/profile/preferences",
         data={
-            "theme": "prehistoric",
+            "theme": "volt",
             "units": "metric",
         },
     )

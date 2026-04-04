@@ -94,7 +94,7 @@ def test_update_account_success(fake_table):
         "timezone": "Europe/London",
         "created_at": "2025-01-01T12:00:00Z",
         "updated_at": "2025-01-03T12:00:00Z",
-        "preferences": {"theme": "prehistoric", "units": "metric"},
+        "preferences": {"theme": "volt", "units": "metric"},
     }
 
     fake_table.response = {"Attributes": expected_attrs}
@@ -155,7 +155,7 @@ def test_update_preferences_success(fake_table):
         "created_at": "2025-01-01T12:00:00Z",
         "updated_at": "2025-01-03T12:00:00Z",
         "preferences": {
-            "theme": "apothecary",
+            "theme": "arctic",
             "units": "imperial",
         },
     }
@@ -166,12 +166,12 @@ def test_update_preferences_success(fake_table):
 
     profile = repo.update_preferences(
         USER_SUB,
-        theme="apothecary",
+        theme="arctic",
         units="imperial",
     )
 
     assert isinstance(profile, UserProfile)
-    assert profile.preferences.theme == "apothecary"
+    assert profile.preferences.theme == "arctic"
     assert profile.preferences.units == "imperial"
 
     kwargs = fake_table.last_update_kwargs
@@ -182,7 +182,7 @@ def test_update_preferences_success(fake_table):
     assert "updated_at" in kwargs["UpdateExpression"]
 
     eav = kwargs["ExpressionAttributeValues"]
-    assert eav[":th"] == "apothecary"
+    assert eav[":th"] == "arctic"
     assert eav[":un"] == "imperial"
     assert isinstance(eav[":ua"], str)
 

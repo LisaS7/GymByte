@@ -13,7 +13,7 @@ from app.models.profile import AccountUpdateForm, Preferences
 def test_preferences_defaults():
     prefs = Preferences()
 
-    assert prefs.theme == "prehistoric"
+    assert prefs.theme == "volt"
     assert prefs.units == "metric"
 
 
