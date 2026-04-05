@@ -116,6 +116,7 @@
                                     workout_id=workout.workout_id,
                                     set_number=s.set_number
                                 ) }}"
+                                hx-trigger="confirmedDelete"
                                 hx-target="#{{ set_row_id }}"
                                 hx-swap="outerHTML"
                                 aria-label="Delete set {{ s.set_number }}"
@@ -157,6 +158,7 @@
             workout_date=workout.date,
             workout_id=workout.workout_id
         ) }}"
+        hx-trigger="confirmedDelete"
         hx-target="body"
         hx-swap="outerHTML"
         aria-label="Delete workout">

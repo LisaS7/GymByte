@@ -44,8 +44,9 @@ document.addEventListener('click', function (e) {
   }
 
   if (btn.hasAttribute('data-pending')) {
-    // Second click: allow htmx to proceed (nothing to do, htmx fires naturally)
+    // Second click: dispatch custom event so htmx fires (hx-trigger="confirmedDelete")
     btn.removeAttribute('data-pending');
+    btn.dispatchEvent(new Event('confirmedDelete'));
     return;
   }
 
