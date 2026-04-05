@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 {% block title %}My Profile - ElbieFit{% endblock %}
 
+{% block flash %}
+  {% if import_success %}
+    <div class="toast success" role="status" aria-live="polite">
+      Import complete — {{ import_workouts }} workout{{ "s" if import_workouts != 1 else "" }},
+      {{ import_exercises }} exercise{{ "s" if import_exercises != 1 else "" }} added{% if import_warnings %},
+      {{ import_warnings }} warning{{ "s" if import_warnings != 1 else "" }}{% endif %}
+    </div>
+    <script>
+      (function () {
+        var t = document.querySelector('.toast');
+        if (!t) return;
+        setTimeout(function () { t.classList.add('fade-out'); }, 3500);
+        setTimeout(function () { t.remove(); }, 3900);
+      })();
+    </script>
+  {% elif import_error %}
+    <div class="toast error" role="alert">{{ import_error }}</div>
+    <script>
+      (function () {
+        var t = document.querySelector('.toast');
+        if (!t) return;
+        setTimeout(function () { t.classList.add('fade-out'); }, 5000);
+        setTimeout(function () { t.remove(); }, 5400);
+      })();
+    </script>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
   {% if profile %}
@@ -12,6 +40,7 @@
 
       {% include "profile/_account_card.html" %}
       {% include "profile/_preferences_card.html" %}
+      {% include "profile/_data_card.html" %}
     </div>
 
   {% else %}

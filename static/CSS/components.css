@@ -355,3 +355,37 @@ textarea:focus {
   gap: 0.6rem;
   margin-top: 0.75rem;
 }
+
+/* ──────────────────────────────── Toast ──────────────────────────────── */
+
+.toast {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.toast.success {
+  background: color-mix(in srgb, var(--color-success) 15%, var(--color-panel));
+  color: var(--color-success);
+  border: 1px solid color-mix(in srgb, var(--color-success) 35%, transparent);
+}
+
+.toast.error {
+  background: color-mix(in srgb, var(--color-danger) 15%, var(--color-panel));
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+
+.toast.fade-out {
+  opacity: 0;
+}

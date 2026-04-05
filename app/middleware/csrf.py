@@ -42,15 +42,21 @@ class CSRFMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         if request.method.upper() not in _SAFE_METHODS:
-            cookie_token = request.cookies.get(_COOKIE_NAME, "")
-            header_token = request.headers.get(_HEADER_NAME, "")
-            if not cookie_token or not secrets.compare_digest(cookie_token, header_token):
-                logger.warning(
-                    f"CSRF validation failed method={request.method} path={path}"
-                )
-                return PlainTextResponse(
-                    "CSRF token missing or invalid", status_code=403
-                )
+            # Multipart requests (file uploads) are excluded here because reading
+            # the body in middleware consumes the stream; CSRF is checked manually
+            # in the route handler for those endpoints.
+            if "multipart/form-data" in request.headers.get("content-type", ""):
+                pass
+            else:
+                cookie_token = request.cookies.get(_COOKIE_NAME, "")
+                header_token = request.headers.get(_HEADER_NAME, "")
+                if not cookie_token or not secrets.compare_digest(cookie_token, header_token):
+                    logger.warning(
+                        f"CSRF validation failed method={request.method} path={path}"
+                    )
+                    return PlainTextResponse(
+                        "CSRF token missing or invalid", status_code=403
+                    )
 
         response = await call_next(request)
 

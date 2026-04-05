@@ -1,0 +1,72 @@
+<section id="data-card" class="card">
+  <div class="flex-row-spaced">
+    <h3>Data</h3>
+  </div>
+
+  <p class="muted">Download a backup of your exercises, workouts, and sets as a JSON file. You can import it later to restore or transfer your data.</p>
+
+  <a href="/profile/data/export" class="button">Download backup</a>
+
+  <hr class="horizontal-divider">
+
+  <form
+    id="import-form"
+    method="post"
+    action="/profile/data/import"
+    enctype="multipart/form-data"
+  >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="form-field">
+      <label for="import_file">Import backup</label>
+      <input
+        id="import_file"
+        name="file"
+        type="file"
+        accept=".json,application/json"
+        required
+      >
+      <p id="import-file-error" class="muted" style="display:none"></p>
+    </div>
+    <div class="form-row">
+      <button type="submit" class="button">Import</button>
+    </div>
+  </form>
+</section>
+
+<script>
+  (function () {
+    var input = document.getElementById("import_file");
+    var errorEl = document.getElementById("import-file-error");
+    var form = document.getElementById("import-form");
+
+    input.addEventListener("change", function () {
+      var file = input.files[0];
+      errorEl.style.display = "none";
+      errorEl.textContent = "";
+
+      if (!file) return;
+
+      if (!file.name.toLowerCase().endsWith(".json")) {
+        errorEl.textContent = "Please select a .json file.";
+        errorEl.style.display = "block";
+        input.value = "";
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        errorEl.textContent = "File is too large (max 5 MB).";
+        errorEl.style.display = "block";
+        input.value = "";
+        return;
+      }
+    });
+
+    form.addEventListener("submit", function (e) {
+      if (input.files.length === 0) return;
+      var file = input.files[0];
+      if (!file.name.toLowerCase().endsWith(".json") || file.size > 5 * 1024 * 1024) {
+        e.preventDefault();
+      }
+    });
+  })();
+</script>

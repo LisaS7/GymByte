@@ -49,6 +49,14 @@ def profile(
     request: Request,
     claims=Depends(auth.require_auth),
     repo: DynamoProfileRepository = Depends(get_profile_repo),
+    # Import flash params (set by redirect after a successful/failed import)
+    import_error: str | None = None,
+    import_exercises: int | None = None,
+    import_matched: int | None = None,
+    import_workouts: int | None = None,
+    import_skipped: int | None = None,
+    import_sets: int | None = None,
+    import_warnings: int | None = None,
 ):
     """Get the profile of the current authenticated user."""
     user_sub = claims["sub"]
@@ -68,6 +76,8 @@ def profile(
 
     logger.debug(f"Profile retrieved for user_sub={user_sub}")
 
+    import_success = import_workouts is not None
+
     return render_template(
         request,
         "profile/profile.html",
@@ -84,6 +94,16 @@ def profile(
             "prefs_form": None,
             "prefs_errors": None,
             "prefs_success": False,
+            # data card
+            "csrf_token": request.cookies.get("csrf_token", ""),
+            "import_error": import_error,
+            "import_success": import_success,
+            "import_exercises": import_exercises,
+            "import_matched": import_matched,
+            "import_workouts": import_workouts,
+            "import_skipped": import_skipped,
+            "import_sets": import_sets,
+            "import_warnings": import_warnings,
         },
         status_code=200,
     )

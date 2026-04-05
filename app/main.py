@@ -6,7 +6,7 @@ from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.theme import ThemeMiddleware
 
 from .error_handlers import register_error_handlers
-from .routes import auth, exercise, home, profile, progress, workout
+from .routes import auth, data, exercise, home, profile, progress, workout
 from .settings import settings
 
 app = FastAPI(title="ElbieFit")
@@ -24,3 +24,4 @@ app.include_router(profile.router)
 app.include_router(workout.router)
 app.include_router(exercise.router)
 app.include_router(progress.router)
+app.include_router(data.router)
