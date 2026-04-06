@@ -32,99 +32,103 @@
     <h1>Progress</h1>
   </div>
 
-  <section class="card">
-    <h2>Workout Frequency</h2>
-    <div class="chart-container">
-      <canvas id="freq-chart" data-chart='{{ freq_data | tojson }}'></canvas>
-    </div>
-  </section>
+  <div class="progress-dashboard">
 
-  <section class="card">
-    <h2>Volume Over Time</h2>
-    {% if exercises %}
-      <div class="form-group">
-        <label for="volume-select">Filter by exercise</label>
-        <select id="volume-select"
-                name="exercise_id"
-                hx-get="/progress/volume"
-                hx-target="#volume-chart-container"
-                hx-trigger="change"
-                hx-include="this">
-          <option value="">All exercises</option>
-          {% for ex in exercises %}
-            <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
-          {% endfor %}
-        </select>
+    <section class="card progress-dashboard__frequency">
+      <h2>Workout Frequency</h2>
+      <div class="chart-container chart-container--tall">
+        <canvas id="freq-chart" data-chart='{{ freq_data | tojson }}'></canvas>
       </div>
-    {% endif %}
-    <div id="volume-chart-container">
-      <div class="chart-container">
-        <canvas id="volume-chart" data-chart='{{ volume_data | tojson }}'></canvas>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="card">
-    <h2>Exercise Progress</h2>
-    <p class="chart-note">Heaviest weight lifted per session for the selected exercise.</p>
-    {% if exercises %}
-      <div class="form-group">
-        <label for="exercise-select">Exercise</label>
-        <select id="exercise-select"
-                name="exercise_id"
-                hx-get="/progress/exercise"
-                hx-target="#exercise-chart-container"
-                hx-trigger="change"
-                hx-include="this">
-          <option value="" disabled selected>Select an exercise…</option>
-          {% for ex in exercises %}
-            <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div id="exercise-chart-container"></div>
-    {% else %}
-      <p class="empty-state">No exercises yet. <a href="/exercise/all">Add some exercises</a> to track your progress.</p>
-    {% endif %}
-  </section>
+    <section class="card progress-dashboard__distribution">
+      <h2>Exercise Distribution</h2>
+      {% if dist_data.by_muscle.labels %}
+        <div class="form-group">
+          <div class="toggle-group" id="dist-toggle">
+            <button class="toggle-btn active" data-view="by_muscle">By Muscle</button>
+            <button class="toggle-btn" data-view="by_exercise">By Exercise</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="dist-chart" data-chart='{{ dist_data | tojson }}'></canvas>
+        </div>
+      {% else %}
+        <p class="empty-state">No workout sets logged yet.</p>
+      {% endif %}
+    </section>
 
-  <section class="card">
-    <h2>Estimated 1RM</h2>
-    {% if exercises %}
-      <div class="form-group">
-        <label for="one-rm-select">Exercise</label>
-        <select id="one-rm-select"
-                name="exercise_id"
-                hx-get="/progress/1rm"
-                hx-target="#one-rm-chart-container"
-                hx-trigger="change"
-                hx-include="this">
-          <option value="" disabled selected>Select an exercise…</option>
-          {% for ex in exercises %}
-            <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div id="one-rm-chart-container"></div>
-    {% else %}
-      <p class="empty-state">No exercises yet. <a href="/exercise/all">Add some exercises</a> to track your progress.</p>
-    {% endif %}
-  </section>
-
-  <section class="card">
-    <h2>Exercise Distribution</h2>
-    {% if dist_data.by_muscle.labels %}
-      <div class="form-group">
-        <div class="toggle-group" id="dist-toggle">
-          <button class="toggle-btn active" data-view="by_muscle">By Muscle</button>
-          <button class="toggle-btn" data-view="by_exercise">By Exercise</button>
+    <section class="card progress-dashboard__volume">
+      <h2>Volume Over Time</h2>
+      {% if exercises %}
+        <div class="form-group">
+          <label for="volume-select">Filter by exercise</label>
+          <select id="volume-select"
+                  name="exercise_id"
+                  hx-get="/progress/volume"
+                  hx-target="#volume-chart-container"
+                  hx-trigger="change"
+                  hx-include="this">
+            <option value="">All exercises</option>
+            {% for ex in exercises %}
+              <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div id="volume-chart-container">
+        <div class="chart-container chart-container--tall">
+          <canvas id="volume-chart" data-chart='{{ volume_data | tojson }}'></canvas>
         </div>
       </div>
-      <div class="chart-container">
-        <canvas id="dist-chart" data-chart='{{ dist_data | tojson }}'></canvas>
-      </div>
-    {% else %}
-      <p class="empty-state">No workout sets logged yet.</p>
-    {% endif %}
-  </section>
+    </section>
+
+    <section class="card progress-dashboard__exercise">
+      <h2>Exercise Progress</h2>
+      <p class="chart-note">Heaviest weight lifted per session for the selected exercise.</p>
+      {% if exercises %}
+        <div class="form-group">
+          <label for="exercise-select">Exercise</label>
+          <select id="exercise-select"
+                  name="exercise_id"
+                  hx-get="/progress/exercise"
+                  hx-target="#exercise-chart-container"
+                  hx-trigger="change"
+                  hx-include="this">
+            <option value="" disabled selected>Select an exercise…</option>
+            {% for ex in exercises %}
+              <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="exercise-chart-container"></div>
+      {% else %}
+        <p class="empty-state">No exercises yet. <a href="/exercise/all">Add some exercises</a> to track your progress.</p>
+      {% endif %}
+    </section>
+
+    <section class="card progress-dashboard__one-rm">
+      <h2>Estimated 1RM</h2>
+      {% if exercises %}
+        <div class="form-group">
+          <label for="one-rm-select">Exercise</label>
+          <select id="one-rm-select"
+                  name="exercise_id"
+                  hx-get="/progress/1rm"
+                  hx-target="#one-rm-chart-container"
+                  hx-trigger="change"
+                  hx-include="this">
+            <option value="" disabled selected>Select an exercise…</option>
+            {% for ex in exercises %}
+              <option value="{{ ex.exercise_id }}">{{ ex.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="one-rm-chart-container"></div>
+      {% else %}
+        <p class="empty-state">No exercises yet. <a href="/exercise/all">Add some exercises</a> to track your progress.</p>
+      {% endif %}
+    </section>
+
+  </div>
 {% endblock %}

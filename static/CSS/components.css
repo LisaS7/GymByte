@@ -372,10 +372,55 @@ textarea:focus {
   max-height: 300px;
 }
 
+/* Taller variant for charts that have more horizontal room to fill */
+.chart-container--tall {
+  max-height: 350px;
+}
+
 .chart-note {
   margin: 0;
   font-size: 0.85rem;
   color: var(--color-muted);
+}
+
+/* ──────────────────────────────── Progress dashboard ──────────────────────────────── */
+
+.progress-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 769px) {
+  .progress-dashboard {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "frequency  distribution"
+      "volume     exercise"
+      "one-rm     one-rm";
+    gap: 1rem;
+  }
+
+  .progress-dashboard__frequency    { grid-area: frequency; }
+  .progress-dashboard__distribution { grid-area: distribution; }
+  .progress-dashboard__volume       { grid-area: volume; }
+  .progress-dashboard__exercise     { grid-area: exercise; }
+  .progress-dashboard__one-rm       {
+    grid-area: one-rm;
+    /* Constrain the 1RM card so it doesn't stretch wall-to-wall on its own row */
+    max-width: 50%;
+  }
+
+  /*
+   * Distribution sits in a 1/3-width column.
+   * A square-ish chart reads better there — cap it at the default 300px
+   * and give it a min-height so the toggle controls don't collapse it.
+   */
+  .progress-dashboard__distribution .chart-container {
+    min-height: 220px;
+  }
 }
 
 /* ──────────────────────────────── Home ──────────────────────────────── */
