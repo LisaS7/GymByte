@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 from typing import Any, Dict
 
 import jwt
-from fastapi import HTTPException, Request
+import requests
+from fastapi import HTTPException, Request, Response
 from jwt import InvalidTokenError, PyJWKClient
 
 from app.settings import settings
@@ -93,7 +94,25 @@ def set_state(sub, request):
     request.state.user_sub = sub
 
 
-def require_auth(request: Request):
+def attempt_token_refresh(refresh_token: str) -> dict:
+    """Call Cognito's token endpoint with grant_type=refresh_token. Returns response JSON."""
+    data = {
+        "grant_type": "refresh_token",
+        "client_id": AUDIENCE,
+        "refresh_token": refresh_token,
+    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    resp = requests.post(settings.token_url(), data=data, headers=headers, timeout=5)
+    logger.debug(f"Token refresh status_code={resp.status_code}")
+
+    if resp.status_code != 200:
+        logger.warning(f"Token refresh failed: {resp.text}")
+        raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
+
+    return resp.json()
+
+
+def require_auth(request: Request, response: Response):
     """
     Validate ID token from cookies and return decoded claims.
     """
@@ -123,8 +142,25 @@ def require_auth(request: Request):
         return decoded_token
 
     except jwt.ExpiredSignatureError:
-        logger.warning("ID token expired")
-        raise HTTPException(status_code=401, detail="Token expired")
+        logger.warning("ID token expired; attempting refresh")
+
+        refresh_token = request.cookies.get("refresh_token")
+        if not refresh_token:
+            raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
+
+        token_data = attempt_token_refresh(refresh_token)
+
+        cookie_opts = {"httponly": True, "secure": True, "samesite": "lax"}
+        response.set_cookie(key="id_token", value=token_data["id_token"], max_age=token_data["expires_in"], **cookie_opts)
+        response.set_cookie(key="access_token", value=token_data["access_token"], max_age=token_data["expires_in"], **cookie_opts)
+
+        new_id_token = token_data["id_token"]
+        decoded_token = decode_and_validate_id_token(
+            id_token=new_id_token, jwks_url=jwks_url, issuer=issuer_url, audience=AUDIENCE
+        )
+        sub = decoded_token.get("sub")
+        set_state(sub, request)
+        return decoded_token
 
     except InvalidTokenError as e:
         logger.error(f"Invalid token: {e}")

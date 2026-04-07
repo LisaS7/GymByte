@@ -1,5 +1,6 @@
 import pytest
 from fastapi import HTTPException
+from fastapi.responses import Response
 
 from app.utils import auth as auth_utils
 from tests.test_data import USER_SUB
@@ -129,7 +130,7 @@ def test_decode_and_validate_id_token_wrong_token_use(monkeypatch):
 async def test_require_auth_success(auth_pipeline, make_request_with_cookies):
     req = make_request_with_cookies({"id_token": "fake-token"})
 
-    decoded = auth_utils.require_auth(req)
+    decoded = auth_utils.require_auth(req, Response())
 
     assert decoded["sub"] == USER_SUB
     assert auth_pipeline["get_id_token"] is True
@@ -145,7 +146,6 @@ async def test_require_auth_failure_cases(
     req = make_request_with_cookies({"id_token": "fake-token"})
 
     cases = [
-        (auth_utils.jwt.ExpiredSignatureError("expired"), "Token expired"),
         (auth_utils.InvalidTokenError("bad token"), "Invalid token"),
         (RuntimeError("something unexpected"), "Invalid token"),
     ]
@@ -160,7 +160,116 @@ async def test_require_auth_failure_cases(
         )
 
         with pytest.raises(HTTPException) as err:
-            auth_utils.require_auth(req)
+            auth_utils.require_auth(req, Response())
 
         assert err.value.status_code == 401
         assert expected in err.value.detail
+
+
+# ------------ attempt_token_refresh ------------
+
+
+def test_attempt_token_refresh_success(monkeypatch):
+    class FakeResp:
+        status_code = 200
+        text = ""
+
+        def json(self):
+            return {
+                "id_token": "new-id-token",
+                "access_token": "new-access-token",
+                "expires_in": 3600,
+            }
+
+    monkeypatch.setattr(auth_utils.requests, "post", lambda *a, **kw: FakeResp())
+
+    result = auth_utils.attempt_token_refresh("valid-refresh-token")
+
+    assert result["id_token"] == "new-id-token"
+    assert result["access_token"] == "new-access-token"
+    assert result["expires_in"] == 3600
+
+
+def test_attempt_token_refresh_failure(monkeypatch):
+    class FakeResp:
+        status_code = 400
+        text = "invalid_grant"
+
+        def json(self):
+            return {}
+
+    monkeypatch.setattr(auth_utils.requests, "post", lambda *a, **kw: FakeResp())
+
+    with pytest.raises(HTTPException) as err:
+        auth_utils.attempt_token_refresh("expired-refresh-token")
+
+    assert err.value.status_code == 401
+    assert "Session expired" in err.value.detail
+
+
+# ------------ require_auth refresh paths ------------
+
+
+def test_require_auth_expired_with_valid_refresh(monkeypatch, make_request_with_cookies, stub_basic_auth_helpers):
+    """Expired ID token + valid refresh token -> success, new cookies set."""
+    req = make_request_with_cookies({"id_token": "expired-token", "refresh_token": "valid-rt"})
+    resp = Response()
+
+    call_count = {"n": 0}
+
+    def fake_decode_and_validate(*args, **kwargs):
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            raise auth_utils.jwt.ExpiredSignatureError("expired")
+        return {"sub": USER_SUB, "exp": 9999999999, "token_use": "id"}
+
+    monkeypatch.setattr(auth_utils, "decode_and_validate_id_token", fake_decode_and_validate)
+    monkeypatch.setattr(
+        auth_utils,
+        "attempt_token_refresh",
+        lambda rt: {"id_token": "new-id", "access_token": "new-at", "expires_in": 3600},
+    )
+
+    decoded = auth_utils.require_auth(req, resp)
+
+    assert decoded["sub"] == USER_SUB
+    # Both new cookies should be queued on the response
+    set_cookie_headers = [v for k, v in resp.raw_headers if k == b"set-cookie"]
+    assert any(b"id_token=new-id" in h for h in set_cookie_headers)
+    assert any(b"access_token=new-at" in h for h in set_cookie_headers)
+
+
+def test_require_auth_expired_no_refresh_token(monkeypatch, make_request_with_cookies, stub_basic_auth_helpers):
+    """Expired ID token + no refresh token -> 401."""
+    req = make_request_with_cookies({"id_token": "expired-token"})
+
+    def fake_decode_and_validate(*args, **kwargs):
+        raise auth_utils.jwt.ExpiredSignatureError("expired")
+
+    monkeypatch.setattr(auth_utils, "decode_and_validate_id_token", fake_decode_and_validate)
+
+    with pytest.raises(HTTPException) as err:
+        auth_utils.require_auth(req, Response())
+
+    assert err.value.status_code == 401
+    assert "Session expired" in err.value.detail
+
+
+def test_require_auth_expired_bad_refresh_token(monkeypatch, make_request_with_cookies, stub_basic_auth_helpers):
+    """Expired ID token + bad refresh token -> 401 from attempt_token_refresh."""
+    req = make_request_with_cookies({"id_token": "expired-token", "refresh_token": "bad-rt"})
+
+    def fake_decode_and_validate(*args, **kwargs):
+        raise auth_utils.jwt.ExpiredSignatureError("expired")
+
+    def fake_attempt_token_refresh(rt):
+        raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
+
+    monkeypatch.setattr(auth_utils, "decode_and_validate_id_token", fake_decode_and_validate)
+    monkeypatch.setattr(auth_utils, "attempt_token_refresh", fake_attempt_token_refresh)
+
+    with pytest.raises(HTTPException) as err:
+        auth_utils.require_auth(req, Response())
+
+    assert err.value.status_code == 401
+    assert "Session expired" in err.value.detail
