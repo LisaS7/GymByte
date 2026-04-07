@@ -1,6 +1,8 @@
 # ElbieFit
 
-ElbieFit is a lightweight workout-logging web application built with FastAPI, HTMX, and AWS serverless infrastructure.
+ElbieFit is a portfolio project — a lightweight workout-logging web application built with FastAPI, HTMX, and a production-grade AWS serverless architecture.
+
+The application is designed to run on AWS (Lambda + DynamoDB + Cognito) and the full infrastructure configuration is included in `infra/` to demonstrate real-world deployment patterns. For simplicity and cost reasons, it is typically run locally using uvicorn and DynamoDB Local.
 
 The goal is to provide a simple, fast, modern interface that allows users to log workouts, track progress, and manage profiles — backed by clean architecture and test-focused development.
 
@@ -13,6 +15,8 @@ The goal is to provide a simple, fast, modern interface that allows users to log
 - Cognito authentication with JWT session cookies
 
 ## Architecture
+
+The diagram below shows the intended AWS deployment architecture. The full infrastructure configuration lives in `infra/` as CloudFormation stacks. Locally, the browser talks directly to uvicorn and DynamoDB Local replaces the managed DynamoDB service.
 
 ```mermaid
 flowchart TD
@@ -54,8 +58,8 @@ flowchart TD
 |---|---|
 | Runtime | Python 3.12 |
 | Framework | FastAPI + Mangum (Lambda adapter) |
-| Database | AWS DynamoDB (single-table design) |
-| Auth | AWS Cognito + JWT |
+| Database | DynamoDB (single-table design) / DynamoDB Local for local dev |
+| Auth | AWS Cognito + JWT (bypassed in local dev) |
 | Frontend | Jinja2 SSR + HTMX + custom CSS |
 | Infrastructure | AWS Lambda, API Gateway v2, CloudFormation |
 | Package manager | uv |
@@ -171,9 +175,9 @@ scripts/
 
 ## Deployment
 
-Deployments run automatically via GitHub Actions on every push to `main`. AWS access uses OIDC (no long-lived keys stored in GitHub).
+The `infra/` directory contains CloudFormation stacks for the full AWS deployment (Lambda, API Gateway, DynamoDB, Cognito, IAM, S3). These exist to demonstrate production infrastructure patterns, not as an actively maintained deployment.
 
-To deploy manually:
+The CI/CD pipeline in `.github/workflows/` packages and deploys the Lambda via GitHub Actions with OIDC (no long-lived keys). The app can be deployed to AWS with the provided scripts:
 
 ```bash
 # Deploy infrastructure (first time or after infra changes)
