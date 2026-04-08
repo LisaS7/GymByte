@@ -371,10 +371,26 @@ textarea:focus {
 /* ──────────────────────────────── Profile ──────────────────────────────── */
 
 .profile-layout {
-  max-width: 600px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+@media (min-width: 769px) {
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "page-heading  page-heading"
+      "account       preferences"
+      "data          data";
+    align-items: start;
+  }
+
+  .profile-layout #page-header       { grid-area: page-heading; }
+  .profile-layout #account-card      { grid-area: account; }
+  .profile-layout #preferences-card  { grid-area: preferences; }
+  .profile-layout #data-card         { grid-area: data; }
 }
 
 /* ──────────────────────────────── Charts ──────────────────────────────── */
