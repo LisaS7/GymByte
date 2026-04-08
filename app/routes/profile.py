@@ -17,8 +17,7 @@ router = APIRouter(prefix="/profile", tags=["profile"])
 # ------------------------- Helpers ------------------------
 
 
-def _tz_options() -> list[str]:
-    return sorted(available_timezones())
+_TZ_OPTIONS: list[str] = sorted(available_timezones())
 
 
 def _errors_dict(e: ValidationError) -> dict[str, str]:
@@ -87,7 +86,7 @@ def profile(
             "themes": settings.THEMES,
             "profile": profile,
             "user_sub": user_sub,
-            "tz_options": _tz_options(),
+            "tz_options": _TZ_OPTIONS,
             # placeholders for card swaps / validation later
             "account_form": None,
             "account_errors": None,
@@ -140,7 +139,7 @@ async def update_account(
             context={
                 "request": request,
                 "profile": profile,
-                "tz_options": _tz_options(),
+                "tz_options": _TZ_OPTIONS,
                 "account_form": data,
                 "account_errors": errors,
                 "account_success": False,
