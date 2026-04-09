@@ -163,7 +163,7 @@ async def update_account(
         context={
             "request": request,
             "profile": profile,
-            "tz_options": _tz_options(),
+            "tz_options": _TZ_OPTIONS,
             "account_form": None,
             "account_errors": None,
             "account_success": True,
